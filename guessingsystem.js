@@ -6,11 +6,12 @@
     this.category = category
     this.difficulty = difficulty
   }
+
 }  
 //Creates a bunch of puzzles
-const allPuzzles = [
-    new puzzle('computer screen','LEDS','technology','medium'),
-		new puzzle('snake','long animal','animial','easy'),
+  const allPuzzles = [
+  new puzzle('computer screen','LEDS','technology','medium'),
+	new puzzle('snake','long animal','animial','easy'),
   ]  
   let currentpuzzle
   let guesses
@@ -18,21 +19,18 @@ const allPuzzles = [
 	let guessPositionY = 100
 	let guessLetterGap = 20	
 	let currentphrase
+  let switchCurrentPuzzle = true;
 function setup() {
   createCanvas(windowWidth, windowHeight);
   background(100);
-  currentpuzzle = random(allPuzzles)
-  guesses = []
-	currentphrase = currentpuzzle.phrase
-  for (let i = 0; i < currentphrase.length; i++) {
-		letter = currentphrase[i]
-		if (letter == ' ') guesses.push(letter)
-		else guesses.push('_')
-	}
+
 }
 
 function draw() {
 	clear()
+  if(switchCurrentPuzzle == true){
+     switchPuzzle()
+  }
 	drawPuzzle()
 }
 
@@ -47,7 +45,14 @@ function keyPressed() {
 	let correctCount = 0
 	for (let i = 0; i < currentphrase.length; i++) {
 		letter = currentphrase[i]
+
 		if (key == letter) {
+       
+        if(key == guesses[i]){
+          print(`You already guessed "${key}"`)
+          break
+        }
+
 			correctCount++
 			guesses[i] = letter
 		}
@@ -55,4 +60,16 @@ function keyPressed() {
 	if (correctCount == 0) {
 		print(`Wrong! there is no "${key}"`)
 	}
+}
+
+function switchPuzzle(){
+    currentpuzzle = random(allPuzzles)
+  guesses = []
+	currentphrase = currentpuzzle.phrase
+  for (let i = 0; i < currentphrase.length; i++) {
+		letter = currentphrase[i]
+		if (letter == ' ') guesses.push(letter)
+		else guesses.push('_')
+	}
+  switchCurrentPuzzle = false;
 }
