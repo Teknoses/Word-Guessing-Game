@@ -47,13 +47,11 @@ function keyPressed() {
 		letter = currentphrase[i]
 
 		if (key == letter) {
-       
+       			correctCount++
         if(key == guesses[i]){
           print(`You already guessed "${key}"`)
           break
         }
-
-			correctCount++
 			guesses[i] = letter
 		}
 	}
