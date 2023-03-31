@@ -6,7 +6,6 @@
     this.category = category
     this.difficulty = difficulty
   }
-
 }  
 //Creates a bunch of puzzles
   const allPuzzles = [
@@ -17,13 +16,12 @@
   let guesses
 	let guessPositionX = 100
 	let guessPositionY = 100
-	let guessLetterGap = 20	
+	let guessLetterGap = 10	
 	let currentphrase
   let switchCurrentPuzzle = true;
 function setup() {
   createCanvas(windowWidth, windowHeight);
   background(100);
-
 }
 
 function draw() {
@@ -42,22 +40,25 @@ function drawPuzzle() {
 }
 
 function keyPressed() {
-	let correctCount = 0
-	for (let i = 0; i < currentphrase.length; i++) {
+  if (key.match(/^[a-z0-9]$/i))
+  {
+    let correctCount = 0
+    	for (let i = 0; i < currentphrase.length; i++) {
 		letter = currentphrase[i]
 
 		if (key == letter) {
-       			correctCount++
-        if(key == guesses[i]){
-          print(`You already guessed "${key}"`)
-          break
-        }
-			guesses[i] = letter
+       correctCount++
+      if(key == guesses[i]){
+      print(`You already guessed "${key}"`)
+    break
+    }
+		guesses[i] = letter
 		}
 	}
 	if (correctCount == 0) {
 		print(`Wrong! there is no "${key}"`)
 	}
+  }
 }
 
 function switchPuzzle(){
@@ -70,4 +71,8 @@ function switchPuzzle(){
 		else guesses.push('_')
 	}
   switchCurrentPuzzle = false;
+}
+
+function mousePressed(){
+  switchPuzzle()
 }
