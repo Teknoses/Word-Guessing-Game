@@ -17,18 +17,17 @@
 	let guessPositionX = 100
 	let guessPositionY = 100
 	let guessLetterGap = 10	
-	let currentphrase
-  let switchCurrentPuzzle = true;
+	let currentphrase  
+  let wrongGuess
 function setup() {
   createCanvas(windowWidth, windowHeight);
   background(100);
+  switchPuzzle()
 }
 
 function draw() {
 	clear()
-  if(switchCurrentPuzzle == true){
-     switchPuzzle()
-  }
+  checkPuzzleCompletion()
 	drawPuzzle()
 }
 
@@ -45,7 +44,6 @@ function keyPressed() {
     let correctCount = 0
     	for (let i = 0; i < currentphrase.length; i++) {
 		letter = currentphrase[i]
-
 		if (key == letter) {
        correctCount++
       if(key == guesses[i]){
@@ -56,21 +54,33 @@ function keyPressed() {
 		}
 	}
 	if (correctCount == 0) {
-		print(`Wrong! there is no "${key}"`)
+    if(wrongGuess.includes(key)){
+       print(`You already guessed "${key}"`)
+    }
+    else{
+      		print(`Wrong! there is no "${key}"`)
+      wrongGuess.push(key)
 	}
+    }  
   }
+}
+
+function checkPuzzleCompletion(){
+if(!guesses.includes('_') ){
+   switchPuzzle()
+}
 }
 
 function switchPuzzle(){
     currentpuzzle = random(allPuzzles)
   guesses = []
+  wrongGuess = []
 	currentphrase = currentpuzzle.phrase
   for (let i = 0; i < currentphrase.length; i++) {
 		letter = currentphrase[i]
 		if (letter == ' ') guesses.push(letter)
 		else guesses.push('_')
 	}
-  switchCurrentPuzzle = false;
 }
 
 function mousePressed(){
