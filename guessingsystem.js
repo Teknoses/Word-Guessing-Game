@@ -1,13 +1,37 @@
 //Defines what a puzzle is
   class puzzle{
-  constructor(phrase,hint,category,difficulty){
+  constructor(phrase,hint,category,difficulty)
+    {
     this.phrase = phrase
     this.hint = hint
     this.category = category
     this.difficulty = difficulty
   }
+  }
+
+class GuessButton{
+  constructor(x,y,width,height){
+    this.x = x
+    this.y = y
+    this.width = width
+    this.height = height
+  }
+  drawButton(){
+      push()
+  rect(this.x, this.y ,this.width ,this.height)
+  textSize(20)
+  text('Guess Word',this.x,this.y + this.height)
+  pop()
+  }
+  checkButtonPressed(){
+    if(mouseX > this.x && mouseX < this.x + this.width && mouseY > this.y && mouseY < this.y + this.height){
+      return 'Pressed'
+    }
+  }
+  GuessWordScreen(){
     
-}  
+  }
+}
 //Creates a bunch of puzzles
   const allPuzzles = [
   new puzzle('snow','water','winter','easy'),
@@ -28,6 +52,7 @@
   new puzzle('winter tires','car','winter','hard'),
   new puzzle('windshield wiper fluid','car','winter','hard'),
   ]  
+  let Button = new GuessButton(400,125,125,25)
   let currentpuzzle
   let guesses
 	let guessPositionX = 200
@@ -35,16 +60,20 @@
 	let guessLetterGap = 10	
 	let currentphrase  
   let wrongGuess
+  let currentGameState
 function setup() {
   createCanvas(windowWidth, windowHeight);
   background(100);
   switchPuzzle()
+  currentGameState = 'guessing letter'
 }
 
 function draw() {
 	clear()
-  checkPuzzleCompletion()
-	drawPuzzle()
+  if(currentGameState == 'guessing letter'){
+    	drawPuzzle()
+  Button.drawButton()
+  }
 }
 
 function drawPuzzle() {
@@ -55,6 +84,9 @@ function drawPuzzle() {
 }
 
 function keyPressed() {
+  if(currentGameState = 'guessing letter'){
+    
+  
   if (key.match(/^[a-z0-9]$/i))
   {
     let correctCount = 0
@@ -67,6 +99,7 @@ function keyPressed() {
     break
     }
 		guesses[i] = letter
+    checkPuzzleCompletion()
 		}
 	}
 	if (correctCount == 0) {
@@ -76,17 +109,24 @@ function keyPressed() {
     else{
       		print(`Wrong! there is no "${key}"`)
       wrongGuess.push(key)
+      
 	}
     }  
+  }
   }
 }
 
 function checkPuzzleCompletion(){
 if(!guesses.includes('_') ){
+  
    switchPuzzle()
 }
 }
-
+function mousePressed(){
+  if(Button.checkButtonPressed() == 'Pressed'){
+  currentGameState = 'guessing word'
+  }
+}
 function switchPuzzle(){
     currentpuzzle = random(allPuzzles)
   guesses = []
