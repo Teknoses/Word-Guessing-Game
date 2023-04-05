@@ -1,3 +1,8 @@
+let heart
+function preload(){
+  heart = loadImage('heart.png')
+}
+
 //Defines what a puzzle is
   class puzzle{
   constructor(phrase,hint,category,difficulty)
@@ -52,15 +57,27 @@ class GuessButton{
   new puzzle('winter tires','car','winter','hard'),
   new puzzle('windshield wiper fluid','car','winter','hard'),
   ]  
-  let Button = new GuessButton(400,125,125,25)
+  let currentHint
   let currentpuzzle
   let guesses
-	let guessPositionX = 200
-	let guessPositionY = 200
-	let guessLetterGap = 10	
-	let currentphrase  
+	let guessPositionX = 500
+	let guessPositionY = 400
+	let guessLetterGap = 40	
+	let currentphrase
+
+//point system
+let points = 0
+
+//player lives counter
+let lives = 3
+
+//menuscreens
+let gameover = false
+
+  let Button = new GuessButton(400,125,125,25)
   let wrongGuess
   let currentGameState
+
 function setup() {
   createCanvas(windowWidth, windowHeight);
   background(100);
@@ -69,17 +86,41 @@ function setup() {
 }
 
 function draw() {
-	clear()
+  gameoverscreen()
+  if (gameover == false) {
+	clear() 
+  drawBackground()
   if(currentGameState == 'guessing letter'){
-    	drawPuzzle()
-  Button.drawButton()
+    	drawPuzzle()  
+      drawHint()  
+      drawLives()
+  Button.drawButton() 
+  push()
+  textSize(50)
+  text("game points: " + points, 100, 50)
+  text("lives: ", 1200, 50)
+  pop()
   }
-}
+  }
+  }
+	
+function drawBackground() {
+  push()
+  fill('gray')
+  rect(0, 0, windowWidth, windowHeight)
+  pop()
+  }
+=======
+  
+
 
 function drawPuzzle() {
 	for (let i = 0; i < guesses.length; i++) {
 		letter = guesses[i]
+    push()
+    textSize(50)
 		text(letter, guessPositionX + i * guessLetterGap, guessPositionY)
+    pop()
 	}
 }
 
@@ -93,15 +134,34 @@ function keyPressed() {
     	for (let i = 0; i < currentphrase.length; i++) {
 		letter = currentphrase[i]
 		if (key == letter) {
-       correctCount++
-      if(key == guesses[i]){
-      print(`You already guessed "${key}"`)
-    break
-    }
-		guesses[i] = letter
+
+       			correctCount++
+        if(key == guesses[i]){
+          print(`You already guessed "${key}"`)
+          break
+        }
+      points = points + 50
+			guesses[i] = letter
+
     checkPuzzleCompletion()
+
 		}
+  }
+	if (correctCount == 0) { 
+   
+    if (lives > 0) {
+      lives = lives - 1
+    }
+    if(lives == 0){
+      gameover = true
+       print("out of lives")
+    }
+   else{ 
+     print(`Wrong! there is no "${key}"`)
+   }
 	}
+
+
 	if (correctCount == 0) {
     if(wrongGuess.includes(key)){
        print(`You already guessed "${key}"`)
@@ -114,6 +174,7 @@ function keyPressed() {
     }  
   }
   }
+
 }
 
 function checkPuzzleCompletion(){
@@ -132,9 +193,46 @@ function switchPuzzle(){
   guesses = []
   wrongGuess = []
 	currentphrase = currentpuzzle.phrase
+  currentHint = currentpuzzle.hint
   for (let i = 0; i < currentphrase.length; i++) {
 		letter = currentphrase[i]
 		if (letter == ' ') guesses.push(letter)
 		else guesses.push('_')
 	}
+
+  switchCurrentPuzzle = false;
 }
+
+function gameoverscreen() {
+  if (gameover == true)
+    fill('red')
+    rect(0, 0, windowWidth, windowHeight)
+    text('Game Over!', 150, 125)
+    text('Out of Lives </3', 150, 175)
+}
+
+function drawHeart (posx, posy, length, height) {
+
+   image(heart, posx, posy, length, height)
+
+}
+
+function drawLives() {
+  if (lives == 3) {
+    drawHeart(1500, 40, 20, 20)
+
+  }
+  if (lives >= 2) {
+    drawHeart(1550, 40, 20, 20)
+  }
+  if (lives >=1) {
+    drawHeart(1600, 40, 20, 20)
+  }
+}
+
+function drawHint(){
+  if(lives <= 2){
+    text(currentHint, 200, 200)
+  }
+}
+
