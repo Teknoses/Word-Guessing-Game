@@ -15,17 +15,18 @@ function preload(){
   }
 
 class GuessButton{
-  constructor(x,y,width,height){
+  constructor(x,y,width,height, text){
     this.x = x
     this.y = y
     this.width = width
     this.height = height
+    this.text = text
   }
   drawButton(){
       push()
   rect(this.x, this.y ,this.width ,this.height)
-  textSize(20)
-  text('Guess Word',this.x,this.y + this.height)
+  textSize(50)
+  text(this.text,this.x,this.y + this.height)
   pop()
   }
   checkButtonPressed(){
@@ -33,8 +34,11 @@ class GuessButton{
       return 'Pressed'
     }
   }
-  GuessWordScreen(){
-    
+  GuessWordWindow(){
+    rect(1920/2 - 400, 700 ,800,200)
+    push()
+    textSize(50)
+    text('What Is Your Guess?', 1920/2 -300, 750)
   }
 }
 //Creates a bunch of puzzles
@@ -60,8 +64,8 @@ class GuessButton{
   let currentHint
   let currentpuzzle
   let guesses
-	let guessPositionX = 500
-	let guessPositionY = 400
+	let guessPositionX = 1920/2
+	let guessPositionY = 1080/2
 	let guessLetterGap = 40	
 	let currentphrase
 
@@ -72,25 +76,25 @@ let points = 0
 let lives = 3
 
 //menuscreens
-let gameover = false
 
-  let Button = new GuessButton(400,125,125,25)
+  let Button = new GuessButton(900,800,500,75, "Guess Word")
   let wrongGuess
   let currentGameState
 
 function setup() {
-  createCanvas(windowWidth, windowHeight);
+  createCanvas(1920, 1080);
   background(100);
   switchPuzzle()
   currentGameState = 'guessing letter'
 }
 
 function draw() {
-  gameoverscreen()
-  if (gameover == false) {
-	clear() 
+  if(currentGameState == 'game over'){
+     gameoverscreen()
+  }
+  else if(currentGameState == 'guessing letter'){
+    clear() 
   drawBackground()
-  if(currentGameState == 'guessing letter'){
     	drawPuzzle()  
       drawHint()  
       drawLives()
@@ -101,25 +105,34 @@ function draw() {
   text("lives: ", 1200, 50)
   pop()
   }
+  else if(currentGameState == 'guessing word'){
+    clear()
+      drawBackground()
+    	drawPuzzle()  
+      drawHint()  
+      drawLives()
+      push()
+  textSize(50)
+  text("game points: " + points, 100, 50)
+  text("lives: ", 1200, 50)
+  pop()
+    Button.GuessWordWindow()
   }
   }
 	
 function drawBackground() {
   push()
   fill('gray')
-  rect(0, 0, windowWidth, windowHeight)
+  rect(0, 0, 1920, 1080)
   pop()
   }
-=======
-  
-
 
 function drawPuzzle() {
 	for (let i = 0; i < guesses.length; i++) {
 		letter = guesses[i]
     push()
     textSize(50)
-		text(letter, guessPositionX + i * guessLetterGap, guessPositionY)
+		text(letter, guessPositionX + i * guessLetterGap - (currentphrase.length * guessLetterGap), guessPositionY)
     pop()
 	}
 }
@@ -153,7 +166,7 @@ function keyPressed() {
       lives = lives - 1
     }
     if(lives == 0){
-      gameover = true
+      currentGameState = 'game over'
        print("out of lives")
     }
    else{ 
@@ -179,19 +192,27 @@ function keyPressed() {
 
 function checkPuzzleCompletion(){
 if(!guesses.includes('_') ){
-  
-   switchPuzzle()
+  switchPuzzle()
 }
 }
+
 function mousePressed(){
-  if(Button.checkButtonPressed() == 'Pressed'){
-  currentGameState = 'guessing word'
+
+    if(Button.checkButtonPressed() == 'Pressed'){
+    if(currentGameState == 'guessing letter'){
+       currentGameState = 'guessing word'
+    }
+  else{
+       currentGameState = 'guessing letter'
   }
+    }
 }
+
 function switchPuzzle(){
     currentpuzzle = random(allPuzzles)
   guesses = []
   wrongGuess = []
+  lives = 3
 	currentphrase = currentpuzzle.phrase
   currentHint = currentpuzzle.hint
   for (let i = 0; i < currentphrase.length; i++) {
@@ -199,12 +220,10 @@ function switchPuzzle(){
 		if (letter == ' ') guesses.push(letter)
 		else guesses.push('_')
 	}
-
-  switchCurrentPuzzle = false;
 }
 
 function gameoverscreen() {
-  if (gameover == true)
+
     fill('red')
     rect(0, 0, windowWidth, windowHeight)
     text('Game Over!', 150, 125)
