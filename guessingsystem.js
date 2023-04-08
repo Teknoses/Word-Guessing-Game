@@ -1,6 +1,7 @@
 let heart
 function preload(){
   heart = loadImage('heart.png')
+  ComicSans = loadFont('comic-sans-ms/COMIC.TTF')
 }
 
 //Defines what a puzzle is
@@ -14,7 +15,7 @@ function preload(){
   }
   }
 
-class GuessButton{
+class Button{
   constructor(x,y,width,height, text){
     this.x = x
     this.y = y
@@ -26,49 +27,53 @@ class GuessButton{
       push()
   rect(this.x, this.y ,this.width ,this.height)
   textSize(50)
-  text(this.text,this.x,this.y + this.height)
+  text(this.text,this.x+this.width/4,this.y + this.height/2 +this.height/4)
   pop()
   }
   checkButtonPressed(){
+    print('Pressed')
     if(mouseX > this.x && mouseX < this.x + this.width && mouseY > this.y && mouseY < this.y + this.height){
       return 'Pressed'
     }
   }
-  GuessWordWindow(){
-    rect(1920/2 - 400, 700 ,800,200)
-    push()
-    textSize(50)
-    text('What Is Your Guess?', 1920/2 -300, 750)
-  }
+
 }
 //Creates a bunch of puzzles
   const allPuzzles = [
   new puzzle('snow','water','winter','easy'),
-  new puzzle('ice','water','winter','easy'),
-  new puzzle('boots','something you put on','winter','easy'),
-  new puzzle('coat','something you put on','winter','easy'),
-  new puzzle('gloves','something you put on','winter','easy'),
-  new puzzle('hat','something you put on','winter','easy'),
-  new puzzle('scarf','something you put on','winter','easy'),
-  new puzzle('salt','removes ice','winter','easy'),
-  new puzzle('shovel','removes snow','winter','medium'),
-  new puzzle('snow pants','something you put on','winter','medium'),
-  new puzzle('snowman','water','winter','medium'),
-  new puzzle('carrot','snowman','winter','medium'),
-  new puzzle('sticks','removes snow','winter','medium'),
-  new puzzle('snow plow','removes snow','winter','medium'),
-  new puzzle('tobogganing','hills','winter','hard'),
-  new puzzle('winter tires','car','winter','hard'),
-  new puzzle('windshield wiper fluid','car','winter','hard'),
+  new puzzle('ice','water','winter','easy')
+    //,
+  // new puzzle('boots','something you put on','winter','easy'),
+  // new puzzle('coat','something you put on','winter','easy'),
+  // new puzzle('gloves','something you put on','winter','easy'),
+  // new puzzle('hat','something you put on','winter','easy'),
+  // new puzzle('scarf','something you put on','winter','easy'),
+  // new puzzle('salt','removes ice','winter','easy'),
+  // new puzzle('shovel','removes snow','winter','medium'),
+  // new puzzle('snow pants','something you put on','winter','medium'),
+  // new puzzle('snowman','water','winter','medium'),
+  // new puzzle('carrot','snowman','winter','medium'),
+  // new puzzle('sticks','removes snow','winter','medium'),
+  // new puzzle('snow plow','removes snow','winter','medium'),
+  // new puzzle('tobogganing','hills','winter','hard'),
+  // new puzzle('winter tires','car','winter','hard'),
+  // new puzzle('windshield wiper fluid','car','winter','hard'),
   ]  
   let currentHint
   let currentpuzzle
   let guesses
-	let guessPositionX = 1920/2
-	let guessPositionY = 1080/2
-	let guessLetterGap = 40	
 	let currentphrase
+  let guessWordButton = new Button(710,800,500,75, "Guess Word")
+  let closeGuessWindow = new Button(1340,680,250,50,'Close')
+  let submitWord = new Button(760,850,300,100,'Submit')
 
+  let wrongLetters
+  let currentGameState
+  let wordGuess 
+
+  let round = 1
+  let turn = 1
+  let playerNumber = 2
 //point system
 let points = 0
 
@@ -77,15 +82,12 @@ let lives = 3
 
 //menuscreens
 
-  let Button = new GuessButton(900,800,500,75, "Guess Word")
-  let wrongGuess
-  let currentGameState
-
 function setup() {
   createCanvas(1920, 1080);
   background(100);
   switchPuzzle()
-  currentGameState = 'guessing letter'
+  textFont(ComicSans)
+  currentGameState = 'guessing word'
 }
 
 function draw() {
@@ -98,7 +100,7 @@ function draw() {
     	drawPuzzle()  
       drawHint()  
       drawLives()
-  Button.drawButton() 
+  guessWordButton.drawButton() 
   push()
   textSize(50)
   text("game points: " + points, 100, 50)
@@ -106,17 +108,17 @@ function draw() {
   pop()
   }
   else if(currentGameState == 'guessing word'){
-    clear()
+       clear()
       drawBackground()
     	drawPuzzle()  
       drawHint()  
       drawLives()
       push()
-  textSize(50)
-  text("game points: " + points, 100, 50)
-  text("lives: ", 1200, 50)
-  pop()
-    Button.GuessWordWindow()
+      textSize(50)
+      text("game points: " + points, 100, 50)
+      text("lives: ", 1200, 50)
+      pop()
+      GuessWordWindow()
   }
   }
 	
@@ -128,19 +130,20 @@ function drawBackground() {
   }
 
 function drawPuzzle() {
+  let guessPositionX = 1920/2
+	let guessPositionY = 1080/2
+	let guessLetterGap = 40	
 	for (let i = 0; i < guesses.length; i++) {
 		letter = guesses[i]
     push()
     textSize(50)
-		text(letter, guessPositionX + i * guessLetterGap - (currentphrase.length * guessLetterGap), guessPositionY)
+		text(letter, guessPositionX + i * guessLetterGap - ((currentphrase.length/2) * guessLetterGap), guessPositionY)
     pop()
 	}
 }
 
 function keyPressed() {
-  if(currentGameState = 'guessing letter'){
-    
-  
+  if(currentGameState == 'guessing letter'){
   if (key.match(/^[a-z0-9]$/i))
   {
     let correctCount = 0
@@ -176,18 +179,27 @@ function keyPressed() {
 
 
 	if (correctCount == 0) {
-    if(wrongGuess.includes(key)){
+    if(wrongLetters.includes(key)){
        print(`You already guessed "${key}"`)
     }
     else{
       		print(`Wrong! there is no "${key}"`)
-      wrongGuess.push(key)
+      wrongLetters.push(key)
       
 	}
     }  
   }
   }
-
+  else if(currentGameState == 'guessing word'){
+    if (key.match(/^[a-z0-9 ]$/i)){
+      print(`Typed "${key}"`)
+      wordGuess.push(key)
+    }
+    if (keyCode == BACKSPACE){
+      print('pp')
+      wordGuess.splice(wordGuess.length - 1,1,)
+    }
+  }
 }
 
 function checkPuzzleCompletion(){
@@ -197,21 +209,28 @@ if(!guesses.includes('_') ){
 }
 
 function mousePressed(){
-
-    if(Button.checkButtonPressed() == 'Pressed'){
-    if(currentGameState == 'guessing letter'){
+    if(closeGuessWindow.checkButtonPressed() == 'Pressed'){
+    wordGuess = []
+    currentGameState = 'guessing letter'
+  }
+    if(guessWordButton.checkButtonPressed() == 'Pressed'){
        currentGameState = 'guessing word'
     }
-  else{
-       currentGameState = 'guessing letter'
-  }
+    if(submitWord.checkButtonPressed() == 'Pressed'){
+    if(checkGuessWord() == 'correct'){
+      switchPuzzle()
     }
+    else{
+      print('incorrect')
+    }
+  }
 }
 
 function switchPuzzle(){
     currentpuzzle = random(allPuzzles)
   guesses = []
-  wrongGuess = []
+  wordGuess = []
+  wrongLetters = []
   lives = 3
 	currentphrase = currentpuzzle.phrase
   currentHint = currentpuzzle.hint
@@ -220,14 +239,18 @@ function switchPuzzle(){
 		if (letter == ' ') guesses.push(letter)
 		else guesses.push('_')
 	}
+  turn++
 }
 
 function gameoverscreen() {
-
+    push()
     fill('red')
-    rect(0, 0, windowWidth, windowHeight)
+    rect(0, 0, 1920, 1080)
+    fill('black')
+    textSize(50)
     text('Game Over!', 150, 125)
     text('Out of Lives </3', 150, 175)
+    pop()
 }
 
 function drawHeart (posx, posy, length, height) {
@@ -255,3 +278,39 @@ function drawHint(){
   }
 }
 
+function GuessWordWindow(){
+    rect(560, 700 ,800,200)
+    push()
+    textSize(50)
+    text('What Is Your Guess?', 670, 750)
+    closeGuessWindow.drawButton()
+    submitWord.drawButton()
+    pop()  
+    	for (let i = 0; i < wordGuess.length; i++) {
+		letter = wordGuess[i]
+      let guessPositionX = 670
+	   let guessPositionY = 800
+	   let guessLetterGap = 35	
+    push()
+    textSize(50)
+		text(letter, guessPositionX + i * guessLetterGap, guessPositionY)
+    pop()
+	}
+}
+
+function checkGuessWord(){
+  let correctletter = 0
+  for(let i = 0; i < wordGuess.length; i++){
+    letter = currentphrase[i]
+    if(letter == wordGuess[i]){
+      correctletter++
+    }
+  }
+  if(correctletter == wordGuess.length){
+    wordGuess = []
+    return 'correct' 
+  }
+  else{
+    wordGuess = []
+  }
+}
