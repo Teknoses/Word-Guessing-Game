@@ -1,7 +1,8 @@
 let heart
 function preload(){
+  backgroundimage = loadImage('background.jpg')
   heart = loadImage('heart.png')
-  ComicSans = loadFont('comic-sans-ms/COMIC.TTF')
+  ComicSans = loadFont('COMIC.TTF')
 }
 
 //Defines what a puzzle is
@@ -22,10 +23,10 @@ class Button{
     this.width = width
     this.height = height
     this.text = text
-
 }
   drawButton(){
       push()
+    strokeWeight(10)
   rect(this.x, this.y ,this.width ,this.height)
   textSize(50)
   text(this.text,this.x+this.width/4,this.y + this.height/2 +this.height/4)
@@ -49,45 +50,58 @@ class points{
 drawpoints(){
   push()
   textSize(50)
-  text('Player ' + this.playerNumber + ' Points: ' + this.points, this.x, this.y)
+  text('Player ' + this.playerNumber + ' Money: $' + this.points, this.x, this.y)
   pop() 
 }
-addpoints(){
-  this.points = this.points + 50
+addpoints(amount){
+  this.points = this.points + amount
 }
 }
 //Creates a bunch of puzzles
   const allPuzzles = [
-  new puzzle('snow','water','winter','easy'),
-  new puzzle('ice','water','winter','easy'),
-  new puzzle('boots','something you put on','winter','easy'),
-  new puzzle('coat','something you put on','winter','easy'),
-  new puzzle('gloves','something you put on','winter','easy'),
-  new puzzle('hat','something you put on','winter','easy'),
-  new puzzle('scarf','something you put on','winter','easy'),
-  new puzzle('salt','removes ice','winter','easy'),
-  new puzzle('shovel','removes snow','winter','medium'),
-  new puzzle('snow pants','something you put on','winter','medium'),
-  new puzzle('snowman','water','winter','medium'),
-  new puzzle('carrot','snowman','winter','medium'),
-  new puzzle('sticks','snowman','winter','medium'),
-  new puzzle('snow plow','removes snow','winter','medium'),
-  new puzzle('tobogganing','hills','winter','hard'),
-  new puzzle('winter tires','car','winter','hard'),
-  new puzzle('windshield wiper fluid','car','winter','hard'),
+  new puzzle('snow','water','Winter','easy'),
+  new puzzle('ice','water','Winter','easy'),
+  new puzzle('boots','something you put on','Winter','easy'),
+  new puzzle('coat','something you put on','Winter','easy'),
+  new puzzle('gloves','something you put on','Winter','easy'),
+  new puzzle('hat','something you put on','Winter','easy'),
+  new puzzle('scarf','something you put on','Winter','easy'),
+  new puzzle('salt','removes ice','Winter','easy'),
+  new puzzle('shovel','removes snow','Winter','medium'),
+  new puzzle('snow pants','something you put on','Winter','medium'),
+  new puzzle('snowman','water','Winter','medium'),
+  new puzzle('carrot','snowman','Winter','medium'),
+  new puzzle('sticks','snowman','Winter','medium'),
+  new puzzle('snow plow','removes snow','Winter','medium'),
+  new puzzle('tobogganing','hills','Winter','hard'),
+  new puzzle('winter tires','car','Winter','hard'),
+  new puzzle('windshield wiper fluid','car','Winter','hard'),
+  new puzzle('ontario','South','Provinces and Territories','easy'),
+  new puzzle('quebec','Français','Provinces and Territories','easy'),
+  new puzzle('manitoba','Touches Ontario','Provinces and Territories','easy'),
+  new puzzle('newfoundland and labrador','Above Quebec','Provinces and Territories','hard'),
+  new puzzle('yukon','Territory','Provinces and Territories','easy'),
+  new puzzle('new brunswick','Small Place','Provinces and Territories','medium'),
+  new puzzle('nova scotia','Small Place','Provinces and Territories','medium'),
+  new puzzle('prince edward island','Island','Provinces and Territories','hard'),
+  new puzzle('saskatchewan','Name never fits inside the province','Provinces and Territories','medium'),
+  new puzzle('alberta','Next to British Columbia','Provinces and Territories','easy'),
+  new puzzle('british columbia','Most Western Province','Provinces and Territories','medium'),
+  new puzzle('northwest territories','Territory','Provinces and Territories','hard'),
+  new puzzle('nunavut','Largest Place in Canada','Provinces and Territories','easy'),
+    
   ]  
-  let currentHint
   let currentpuzzle
   let guesses
 	let currentphrase
   let guessWordButton = new Button(710,700,500,75, "Guess Word")
-  let closeGuessWindow = new Button(1340,680,250,50,'Close')
+  let closeGuessWindow = new Button(1340,680,250,75,'Close')
   let submitWord = new Button(760,850,300,100,'Submit')
 
   let wrongLetters
   let currentGameState
   let wordGuess 
-
+  let currentCategory
   let round = 1
   let turn = 0
   let currentplayers = [
@@ -96,18 +110,19 @@ addpoints(){
   Player3points = new points(100,1000, 3),
   Player4points = new points(1200,1000, 4),
   ]
-  let playerNumber = 4
+  let playerNumber = 2
 //point system
 
 
 //player lives counter
-let lives = 3
+let lives
 
 //menuscreens
 
 function setup() {
   createCanvas(1920, 1080);
   background(100);
+  currentCategory = random(allPuzzles)
   switchPuzzle()
   textFont(ComicSans)
   currentGameState = 'guessing letter'
@@ -120,7 +135,7 @@ function draw() {
   else if(currentGameState == 'guessing letter'){
       checkPuzzleCompletion()
       clear() 
-      drawBackground()
+      drawImage(backgroundimage,0,0,1920,1080)
     	drawPuzzle()  
       drawHint()  
       drawLives()
@@ -131,7 +146,7 @@ function draw() {
   }
   else if(currentGameState == 'guessing word'){
       clear()
-      drawBackground()
+      drawImage(backgroundimage,0,0,1920,1080)
     	drawPuzzle()  
       drawHint()  
       drawLives()
@@ -141,53 +156,70 @@ function draw() {
       GuessWordWindow()
   }
   }
-	
-function drawBackground() {
-  push()
-  fill('gray')
-  rect(0, 0, 1920, 1080)
-  pop()
-  }
 
 function drawPuzzle() {
   let guessPositionX = 1920/2
 	let guessPositionY = 1080/2
 	let guessLetterGap = 40	
+    push()
+    strokeWeight(10)
+    rectMode(CORNERS)
+    rect(400,300,1560,780)
+    pop()
+//Draws Letters Guessing/ Correct Guesses
 	for (let i = 0; i < guesses.length; i++) {
 		letter = guesses[i]
     push()
     textSize(50)
 		text(letter, guessPositionX + i * guessLetterGap - ((currentphrase.length/2) * guessLetterGap), guessPositionY)
     pop()
+//Draws Category
+      push()
+  strokeWeight(10)
+  rectMode(CORNERS)
+  rect(400,125,1560,250)
+    textSize(50)
+    text('Category: ' + currentCategory.category, 410, 200)
+   pop()
 	}
 }
 
 function keyPressed() {
   if(currentGameState == 'guessing letter'){
-  if (key.match(/^[a-z0-9]$/i))
+  if (key.match(/^[a-zA-Z0-9]$/i))
   {
+    let typedletter = key.toLowerCase()
     let correctCount = 0
     	for (let i = 0; i < currentphrase.length; i++) {
 		letter = currentphrase[i]
-		if (key == letter) {
-
+		if (typedletter == letter) {
        			correctCount++
-        if(key == guesses[i]){
-          print(`You already guessed "${key}"`)
+        if(typedletter == guesses[i]){
+          print(`You already guessed "${typedletter}"`)
           break
         }
-      currentplayers[turn - 1].addpoints()
+      
+      if(currentpuzzle.difficulty == 'easy'){
+        currentplayers[turn - 1].addpoints(50)
+      }
+      else if(currentpuzzle.difficulty == 'medium'){
+        currentplayers[turn - 1].addpoints(35)
+      }
+      else if(currentpuzzle.difficulty == 'hard'){
+        currentplayers[turn - 1].addpoints(25)
+      }
+   
 			guesses[i] = letter
 		}
   }
 
 	if (correctCount == 0) {
-    if(wrongLetters.includes(key)){
-       print(`You already guessed "${key}"`)
+    if(wrongLetters.includes(typedletter)){
+       print(`You already guessed "${typedletter}"`)
     }
     else{
-      		print(`Wrong! there is no "${key}"`)
-      wrongLetters.push(key) 
+      		print(`Wrong! there is no "${typedletter}"`)
+      wrongLetters.push(typedletter) 
       if (lives > 0) {
       lives = lives - 1
     }
@@ -200,9 +232,10 @@ function keyPressed() {
   }
   }
   else if(currentGameState == 'guessing word'){
-    if (key.match(/^[a-z0-9 ]$/i)){
+    if (key.match(/^[a-zA-Z0-9 ]$/i)){
       print(`Typed "${key}"`)
-      wordGuess.push(key)
+      let typedletter = key.toLowerCase()
+      wordGuess.push(typedletter)
     }
     if (keyCode == BACKSPACE){
       print('pp')
@@ -247,20 +280,23 @@ function mousePressed(){
 }
 
 function switchPuzzle(){
+  turnSwitch()
   currentGameState = 'guessing letter'
-  currentpuzzle = random(allPuzzles)
+    currentpuzzle = random(allPuzzles)
+  while(currentpuzzle.category !== currentCategory.category){
+     currentpuzzle = random(allPuzzles)
+  }
   guesses = []
   wordGuess = []
   wrongLetters = []
-  lives = 3
+  lives = 5
 	currentphrase = currentpuzzle.phrase
-  currentHint = currentpuzzle.hint
   for (let i = 0; i < currentphrase.length; i++) {
 		letter = currentphrase[i]
 		if (letter == ' ') guesses.push(letter)
 		else guesses.push('_')
 	}
-  turnSwitch()
+  
 }
 
 function gameoverscreen() {
@@ -274,38 +310,40 @@ function gameoverscreen() {
     pop()
 }
 
-function drawHeart (posx, posy, length, height) {
-   image(heart, posx, posy, length, height)
+function drawImage (imagename,posx, posy, length, height) {
+   image(imagename, posx, posy, length, height)
 }
 
 function drawLives() {
+  let livesPosx = 850
+  let livesPosY = 20
+  let livesGap = 60
   push()
   textSize(50)
   text("Lives: ", 700, 50)
   pop()
-  if (lives == 3) {
-    drawHeart(850, 20, 50, 50)
-
-  }
-  if (lives >= 2) {
-    drawHeart(910, 20, 50, 50)
-  }
-  if (lives >=1) {
-    drawHeart(970, 20, 50, 50)
-  }
+  for(let i = 0;i < lives; i++)
+    {
+    drawImage(heart,livesPosx + livesGap * i, livesPosY, 50, 50)
+    }
+  
 }
 
 function drawHint(){
+  let currentHint = currentpuzzle.hint
   if(lives <= 2){
     push()
     textSize(50)
-    text('Hint: ' + currentHint, 760, 200)
+    text('Hint: ' + currentHint, 450, 400)
+    pop()
   }
 }
 
+
 function GuessWordWindow(){
-    rect(560, 700 ,800,200)
     push()
+    strokeWeight(10)
+    rect(560, 700 ,800,200)
     textSize(50)
     text('What Is Your Guess?', 670, 750)
     closeGuessWindow.drawButton()
@@ -355,6 +393,9 @@ function turnSwitch(){
   else{
     turn = 1
     round++
+    
+    currentCategory = random(allPuzzles)
+    print('new category is: ' + currentCategory.category)
     print('Current Turn is:' + turn)
     print('Round:' + round)
   }
