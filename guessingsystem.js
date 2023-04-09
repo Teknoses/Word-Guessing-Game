@@ -22,7 +22,8 @@ class Button{
     this.width = width
     this.height = height
     this.text = text
-  }
+
+}
   drawButton(){
       push()
   rect(this.x, this.y ,this.width ,this.height)
@@ -38,6 +39,23 @@ class Button{
   }
 }
 
+class points{
+  constructor(x,y,playerNumber,){
+    this.x = x
+    this.y = y
+    this.playerNumber = playerNumber
+    this.points = 0
+  }
+drawpoints(){
+  push()
+  textSize(50)
+  text('Player ' + this.playerNumber + ' Points: ' + this.points, this.x, this.y)
+  pop() 
+}
+addpoints(){
+  this.points = this.points + 50
+}
+}
 //Creates a bunch of puzzles
   const allPuzzles = [
   new puzzle('snow','water','winter','easy'),
@@ -72,9 +90,15 @@ class Button{
 
   let round = 1
   let turn = 0
-  let playerNumber = 2
+  let currentplayers = [
+  Player1points = new points(100, 50, 1),
+  Player2points = new points(1200,50, 2),
+  Player3points = new points(100,1000, 3),
+  Player4points = new points(1200,1000, 4),
+  ]
+  let playerNumber = 4
 //point system
-let points = 0
+
 
 //player lives counter
 let lives = 3
@@ -94,29 +118,35 @@ function draw() {
      gameoverscreen()
   }
   else if(currentGameState == 'guessing letter'){
-    clear() 
-  drawBackground()
-    	drawPuzzle()  
-      drawHint()  
-      drawLives()
-  guessWordButton.drawButton() 
-  push()
-  textSize(50)
-  text("game points: " + points, 100, 50)
-  text("lives: ", 1200, 50)
-  pop()
-  }
-  else if(currentGameState == 'guessing word'){
-       clear()
+      checkPuzzleCompletion()
+      clear() 
       drawBackground()
     	drawPuzzle()  
       drawHint()  
       drawLives()
       push()
       textSize(50)
-      text("game points: " + points, 100, 50)
-      text("lives: ", 1200, 50)
+      text("Lives: ", 700, 50)
       pop()
+      for(let i = 0; i < playerNumber; i++){
+         currentplayers[i].drawpoints()
+      }
+     
+      guessWordButton.drawButton() 
+  }
+  else if(currentGameState == 'guessing word'){
+      clear()
+      drawBackground()
+    	drawPuzzle()  
+      drawHint()  
+      drawLives()
+      push()
+      textSize(50)
+      text("lives: ", 800, 50)
+      pop()
+      for(let i = 0; i < playerNumber; i++){
+      currentplayers[i].drawpoints()
+      }
       GuessWordWindow()
   }
   }
@@ -155,11 +185,8 @@ function keyPressed() {
           print(`You already guessed "${key}"`)
           break
         }
-      points = points + 50
+      currentplayers[turn - 1].addpoints()
 			guesses[i] = letter
-
-    checkPuzzleCompletion()
-
 		}
   }
 
@@ -260,14 +287,14 @@ function drawHeart (posx, posy, length, height) {
 
 function drawLives() {
   if (lives == 3) {
-    drawHeart(1500, 40, 20, 20)
+    drawHeart(850, 20, 50, 50)
 
   }
   if (lives >= 2) {
-    drawHeart(1550, 40, 20, 20)
+    drawHeart(910, 20, 50, 50)
   }
   if (lives >=1) {
-    drawHeart(1600, 40, 20, 20)
+    drawHeart(970, 20, 50, 50)
   }
 }
 
