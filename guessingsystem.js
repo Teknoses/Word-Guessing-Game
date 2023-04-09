@@ -70,7 +70,7 @@ addpoints(){
   new puzzle('snow pants','something you put on','winter','medium'),
   new puzzle('snowman','water','winter','medium'),
   new puzzle('carrot','snowman','winter','medium'),
-  new puzzle('sticks','removes snow','winter','medium'),
+  new puzzle('sticks','snowman','winter','medium'),
   new puzzle('snow plow','removes snow','winter','medium'),
   new puzzle('tobogganing','hills','winter','hard'),
   new puzzle('winter tires','car','winter','hard'),
@@ -115,7 +115,7 @@ function setup() {
 
 function draw() {
   if(currentGameState == 'game over'){
-     gameoverscreen()
+      switchPuzzle()
   }
   else if(currentGameState == 'guessing letter'){
       checkPuzzleCompletion()
@@ -124,14 +124,9 @@ function draw() {
     	drawPuzzle()  
       drawHint()  
       drawLives()
-      push()
-      textSize(50)
-      text("Lives: ", 700, 50)
-      pop()
       for(let i = 0; i < playerNumber; i++){
          currentplayers[i].drawpoints()
       }
-     
       guessWordButton.drawButton() 
   }
   else if(currentGameState == 'guessing word'){
@@ -140,10 +135,6 @@ function draw() {
     	drawPuzzle()  
       drawHint()  
       drawLives()
-      push()
-      textSize(50)
-      text("lives: ", 800, 50)
-      pop()
       for(let i = 0; i < playerNumber; i++){
       currentplayers[i].drawpoints()
       }
@@ -239,15 +230,17 @@ function mousePressed(){
   }
     if(submitWord.checkButtonPressed() == 'Pressed'){
     if(checkGuessWord() == 'nothing'){
-      print('nothing was written')
+    print('nothing was written')
     }
-    else if(checkGuessWord() == 'correct'){
+    else if(checkGuessWord() == true){
+      print('correct')
       switchPuzzle()
     }
-    else{
+    else if(checkGuessWord() == false){
     print('incorrect')
     switchPuzzle()
     }
+
   }
    
   }
@@ -286,6 +279,10 @@ function drawHeart (posx, posy, length, height) {
 }
 
 function drawLives() {
+  push()
+  textSize(50)
+  text("Lives: ", 700, 50)
+  pop()
   if (lives == 3) {
     drawHeart(850, 20, 50, 50)
 
@@ -326,27 +323,26 @@ function GuessWordWindow(){
 	}
 }
 
-function checkGuessWord(){
+function checkGuessWord(){ 
+  if(wordGuess.length == 0)
+  {
+    print('nothing')
+    return 'nothing'
+  }
   let correctletter = 0
   for(let i = 0; i < wordGuess.length; i++){
     letter = currentphrase[i]
     if(letter == wordGuess[i]){
       correctletter++
     }
-    else{
-      correctletter--
     }
-  }
-  if(correctletter == 0)
-  {
-    return 'nothing'
-  }
-  else if(correctletter == wordGuess.length){
-    wordGuess = []
-    return 'correct' 
+  if(correctletter == wordGuess.length){
+    print('yes')
+    return true 
   }
   else{
-    wordGuess = []
+    print('no')
+    return false
   }
 }
 
