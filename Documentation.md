@@ -1,6 +1,6 @@
 # Word-Guessing-Game
 ## What is it
-This is a game designed like hangman -or the more apporiate snowman. This can played in either single player or multiplayer, from either 1-4 players. It will have a point system that users can use to see their progress or determine a winner. The game will include different modes for players such as first grader, math, etc.The game is turn-based with multiple rounds; each round will have a cycle of all the player(s) guessing a word from a category. Each word will have a difficulty and will award different amounts of points depending on it. Guessing the wrong letter will lose you a life, losing all your lives will cause your turn to end. If a player manages to guess a word without any lives lost, then they are awarded a spin; the spin will award either a bonus to you or a sabotage to an opponents. The game will end when all the rounds have ended.
+This is a game designed like hangman -or the more appropriate snowman. This game played in either single-player or multiplayer, from 1-4 players / teams. The game will have a point system that players can use to see their progress and / or determine a winner. The game will include different gamemodes for players such as first grader, math, etc. The game is turn-based with multiple rounds; each round will have a cycle of all the player(s) in random order, guessing a randomly selected word from the same category. Each word will have a difficulty and will award different amounts of points depending on the letters guessed and the length of the word. Guessing the wrong letter will lose you a life, losing all your lives will cause your turn to end and indicate the next team's turn. Guessing the entire word will also cause your turn to end. Once all players have had their turn, a new round will begin. If a player manages to guess a word without any lives lost, then they are awarded a spin; the spin will award either a bonus to you or a sabotage to a selected opponent. The game will end when all the rounds have ended.
 ## Feature
 * Who is the game designed for?
 Our game is designed for Grade 1 students. The purpose of the game is to inform, familiarize, and test players with terminology that they may not already know in an interactive and trackable manner(money).
@@ -9,7 +9,7 @@ Our game allows for multiplayer, sabotages, and spinners. Players are able to ch
 * How will the game start and end?
 The game will start with the start screen introducing players to our game. The game will end at the end of all of the rounds - determined by the round select prompted before the game started.
 * How will players know what to do?
-
+A video will be made on Youtube to explain the main function of the game and how to play it.
 * What kind of scoring system will you use?
 It is a linear scoring system consisting of money currency. When a letter is guessed, points will be added to the team's total points.
 * How many players are supported? 
@@ -23,10 +23,11 @@ During the later stages, users will be faced with more difficult words and event
 ## Design
 ## Currently Working On
 * Layout
-* Update Point System
-
+* Themes
+* Music and Sound
 * Spinning System
 * Sabotages
 * Bonuses
-* More Words On The Word List
+* Update Point System
+* More Words On the Word List
 * Random Selection Order System
