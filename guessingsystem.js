@@ -17,17 +17,20 @@ class puzzle{
   }
 
 class Button{
-  constructor(x,y,width,height, text){
+  constructor(x,y,width,height, text,colour){
     this.x = x
     this.y = y
     this.width = width
     this.height = height
     this.text = text
+    this.colour = colour
 }
   drawButton(){
-      push()
-    strokeWeight(10)
+  push()
+  fill(this.colour)
+  strokeWeight(10)
   rect(this.x, this.y ,this.width ,this.height)
+  fill('black')
   textSize(50)
   text(this.text,this.x+this.width/4,this.y + this.height/2 +this.height/4)
   pop()
@@ -105,20 +108,36 @@ addpoints(amount){
   new puzzle('neck','Holds Necklaces','Body Part','easy'),
   new puzzle('beard','Adults have them','Body Part','easy'),
   new puzzle('finger','Typing','Body Part','easy'),
-  ]  
+  ]
+//creates all variables for a turn 
   let currentpuzzle
   let guesses
 	let currentphrase
-  let guessWordButton = new Button(710,700,500,75, "Guess Word")
-  let closeGuessWindow = new Button(1340,680,250,75,'Close')
-  let submitWord = new Button(760,850,300,100,'Submit')
-  let roundlimit
   let wrongLetters
-  let currentGameState
-  let wordGuess 
+  let wordGuess
   let currentCategory
+  //all Buttons
+  let guessWordButton = new Button(710,700,500,75, "Guess Word",'white')
+  let closeGuessWindow = new Button(1340,680,250,75,'Close','white')
+  let submitWord = new Button(760,850,300,100,'Submit','white')
+  let gradeOneMode = new Button(460,240,500,500,'Grade One','red')
+  let SecondGameMode = new Button(960,240,500,500,'N/A','Green')
+  let onePlayer = new Button(60,240,450,450,'One Player','Cyan')
+  let twoPlayer = new Button(510,240,450,450,'Two Player','Pink')
+  let threePlayer = new Button(960,240,450,450,'Three Player','Orange')
+  let fourPlayer = new Button(1410,240, 450,450,'Four Player','Brown')
+  let fiveRounds = new Button(240,240,500,500,'5 Rounds','#2596be')
+  let tenRounds = new Button(740,240,500,500,'10 Rounds','#5e1da3')
+  let infiniteRounds = new Button(1240,240,500,500,'Infinite Rounds','#ff00aa')
+  let startgame = new Button(860,540,200,125,'Start','white')
+  //currentGameState allows for game to switch between modes
+  let currentGameState
+   
+  //creates rounds and turns
   let round = 1
   let turn = 0
+  let roundlimit
+  //creates players up to 4 & how many players during a game
   let currentplayers = [
   Player1points = new points(100, 50, 1),
   Player2points = new points(1200,50, 2),
@@ -126,26 +145,54 @@ addpoints(amount){
   Player4points = new points(1200,1000, 4),
   ]
   let playerNumber = 2
-//point system
 
 
-//player lives counter
+//player lives counter per turn
 let lives
-
-//menuscreens
 
 function setup() {
   createCanvas(1920, 1080);
   background(100);
-  roundlimit = 10
   currentCategory = random(allPuzzles)
   switchPuzzle()
   textFont(ComicSans)
-  currentGameState = 'guessing letter'
+  currentGameState = 'main menu'
 }
 
 function draw() {
-
+if(currentGameState == 'main menu'){
+  clear()
+  drawImage(backgroundimage,0,0,1920,1080)
+  push()
+  strokeWeight(10)
+  textSize(75)
+  rectMode(CORNERS)
+  rect(460,20,1460, 120)
+  text('Orthographer Capitalists', 500,90)
+  pop()
+  startgame.drawButton()
+}
+if(currentGameState == 'gamemode selection'){
+  clear()
+  drawImage(backgroundimage,0,0,1920,1080)
+  gradeOneMode.drawButton()
+  SecondGameMode.drawButton()
+}
+else if(currentGameState == 'player selection'){
+  clear()
+  drawImage(backgroundimage,0,0,1920,1080)
+  onePlayer.drawButton()
+  twoPlayer.drawButton()
+  threePlayer.drawButton()
+  fourPlayer.drawButton()
+}
+else if(currentGameState == 'round selection'){
+  clear()
+  drawImage(backgroundimage,0,0,1920,1080)
+  fiveRounds.drawButton()
+  tenRounds.drawButton()
+  infiniteRounds.drawButton()
+}
   if(round > roundlimit){
     clear()
     gameoverscreen()
@@ -273,13 +320,56 @@ if(!guesses.includes('_') ){
 }
 }
 
-function mousePressed(){
-  if(currentGameState == 'guessing letter'){
+function mousePressed(){   
+  if(currentGameState == 'main menu'){
+   if(startgame.checkButtonPressed() == 'Pressed'){
+     currentGameState = 'player selection'
+   }
+  }
+  else if(currentGameState == 'gamemode selection'){
+     if(gradeOneMode.checkButtonPressed() == 'Pressed'){
+      currentGameState = 'player selection'
+    }
+  }
+  else if(currentGameState == 'player selection'){
+    if(onePlayer.checkButtonPressed() == 'Pressed'){
+      playerNumber = 1
+      currentGameState = 'round selection'
+    }
+     if(twoPlayer.checkButtonPressed() == 'Pressed'){
+      playerNumber = 2
+      currentGameState = 'round selection'
+    }
+     if(threePlayer.checkButtonPressed() == 'Pressed'){
+      playerNumber = 3
+      currentGameState = 'round selection'
+    }
+     if(fourPlayer.checkButtonPressed() == 'Pressed'){
+      playerNumber = 4
+      currentGameState = 'round selection'
+    }
+  }  
+  else if(currentGameState == 'round selection'){
+    if(fiveRounds.checkButtonPressed() == 'Pressed'){
+      roundlimit = 5
+      currentGameState = 'guessing letter'
+    }
+     if(tenRounds.checkButtonPressed() == 'Pressed'){
+     roundlimit = 10
+      currentGameState = 'guessing letter'
+    }
+     if(infiniteRounds.checkButtonPressed() == 'Pressed'){
+      roundlimit = 9999
+      currentGameState = 'guessing letter'
+    }
+  
+  }
+  else if(currentGameState == 'guessing letter'){
      if(guessWordButton.checkButtonPressed() == 'Pressed'){
        currentGameState = 'guessing word'
     }
   }
-  if(currentGameState == 'guessing word'){
+  else if(currentGameState == 'guessing word'){
       if(closeGuessWindow.checkButtonPressed() == 'Pressed'){
     wordGuess = []
     currentGameState = 'guessing letter'
@@ -328,8 +418,7 @@ function gameoverscreen() {
     rect(0, 0, 1920, 1080)
     fill('black')
     textSize(50)
-    text('Game Over!', 150, 125)
-    text('Out of Lives </3', 150, 175)
+    text('Game Over!', 660, 125)
     pop()
 }
 
