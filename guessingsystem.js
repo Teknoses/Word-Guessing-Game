@@ -89,7 +89,22 @@ addpoints(amount){
   new puzzle('british columbia','Most Western Province','Provinces and Territories','medium'),
   new puzzle('northwest territories','Territory','Provinces and Territories','hard'),
   new puzzle('nunavut','Largest Place in Canada','Provinces and Territories','easy'),
-    
+  new puzzle('hand','Arms','Body Part','easy'),
+  new puzzle('foot','Legs','Body Part','easy'),
+  new puzzle('head','Top of the Human','Body Part','easy'),
+  new puzzle('nose','Face','Body Part','easy'),
+  new puzzle('arm','Limbs','Body Part','easy'),
+  new puzzle('leg','Limbs','Body Part','easy'),
+  new puzzle('face','Head','Body Part','easy'),
+  new puzzle('mouth','Face','Body Part','easy'),
+  new puzzle('teeth','Dirtiest Bones','Body Part','easy'),
+  new puzzle('knee','Middle of Leg','Body Part','easy'),
+  new puzzle('heart','Middle of the Body','Body Part','easy'),
+  new puzzle('ankle','You can Roll them','Body Part','easy'),
+  new puzzle('thigh','Popular Piece of Chicken','Body Part','easy'),
+  new puzzle('neck','Holds Necklaces','Body Part','easy'),
+  new puzzle('beard','Adults have them','Body Part','easy'),
+  new puzzle('finger','Typing','Body Part','easy'),
   ]  
   let currentpuzzle
   let guesses
@@ -97,7 +112,7 @@ addpoints(amount){
   let guessWordButton = new Button(710,700,500,75, "Guess Word")
   let closeGuessWindow = new Button(1340,680,250,75,'Close')
   let submitWord = new Button(760,850,300,100,'Submit')
-
+  let roundlimit
   let wrongLetters
   let currentGameState
   let wordGuess 
@@ -122,6 +137,7 @@ let lives
 function setup() {
   createCanvas(1920, 1080);
   background(100);
+  roundlimit = 10
   currentCategory = random(allPuzzles)
   switchPuzzle()
   textFont(ComicSans)
@@ -129,8 +145,13 @@ function setup() {
 }
 
 function draw() {
-  if(currentGameState == 'game over'){
-      switchPuzzle()
+
+  if(round > roundlimit){
+    clear()
+    gameoverscreen()
+  }
+  else if(currentGameState == 'out of lives'){
+    switchPuzzle()
   }
   else if(currentGameState == 'guessing letter'){
       checkPuzzleCompletion()
@@ -139,6 +160,7 @@ function draw() {
     	drawPuzzle()  
       drawHint()  
       drawLives()
+      drawTurnsAndRounds()
       for(let i = 0; i < playerNumber; i++){
          currentplayers[i].drawpoints()
       }
@@ -150,6 +172,7 @@ function draw() {
     	drawPuzzle()  
       drawHint()  
       drawLives()
+      drawTurns()
       for(let i = 0; i < playerNumber; i++){
       currentplayers[i].drawpoints()
       }
@@ -224,7 +247,7 @@ function keyPressed() {
       lives = lives - 1
     }
     if(lives == 0){
-      currentGameState = 'game over'
+      currentGameState = 'out of lives'
        print("out of lives")
     }
 	}
@@ -339,7 +362,6 @@ function drawHint(){
   }
 }
 
-
 function GuessWordWindow(){
     push()
     strokeWeight(10)
@@ -387,16 +409,30 @@ function checkGuessWord(){
 function turnSwitch(){
   if(turn < playerNumber){
      turn++
-    print('Current Turn is:' + turn)
+    push()
+    print('Turn' + turn)
     print('Round:' + round)
+    pop()
   }
   else{
     turn = 1
     round++
-    
     currentCategory = random(allPuzzles)
-    print('new category is: ' + currentCategory.category)
-    print('Current Turn is:' + turn)
-    print('Round:' + round)
   }
+
 }
+
+function drawTurnsAndRounds(){
+push()
+strokeWeight(10)
+rectMode(CORNERS)
+//draws Turns
+rect(10,530,380,605)
+textSize(50)
+text('Player ' + turn + "'s Turn", 15, 585)  
+//draws Rounds
+rect(10,430,380,505)
+text('Round ' + round + '/' + roundlimit, 15, 485)
+pop()
+}
+
