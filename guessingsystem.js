@@ -130,6 +130,7 @@ addpoints(amount){
   let tenRounds = new Button(740,240,500,500,'10 Rounds','#5e1da3')
   let infiniteRounds = new Button(1240,240,500,500,'Infinite Rounds','#ff00aa')
   let startgame = new Button(860,540,200,125,'Start','white')
+  let backbutton = new Button(20,20,200, 100,'Back','white')
   //currentGameState allows for game to switch between modes
   let currentGameState
    
@@ -177,6 +178,7 @@ if(currentGameState == 'gamemode selection'){
   drawImage(backgroundimage,0,0,1920,1080)
   gradeOneMode.drawButton()
   SecondGameMode.drawButton()
+  backbutton.drawButton()
 }
 else if(currentGameState == 'player selection'){
   clear()
@@ -185,6 +187,7 @@ else if(currentGameState == 'player selection'){
   twoPlayer.drawButton()
   threePlayer.drawButton()
   fourPlayer.drawButton()
+  backbutton.drawButton()
 }
 else if(currentGameState == 'round selection'){
   clear()
@@ -192,6 +195,7 @@ else if(currentGameState == 'round selection'){
   fiveRounds.drawButton()
   tenRounds.drawButton()
   infiniteRounds.drawButton()
+  backbutton.drawButton()
 }
   if(round > roundlimit){
     clear()
@@ -323,46 +327,54 @@ if(!guesses.includes('_') ){
 function mousePressed(){   
   if(currentGameState == 'main menu'){
    if(startgame.checkButtonPressed() == 'Pressed'){
-     currentGameState = 'player selection'
+     currentGameState = 'gamemode selection'
    }
   }
   else if(currentGameState == 'gamemode selection'){
      if(gradeOneMode.checkButtonPressed() == 'Pressed'){
       currentGameState = 'player selection'
     }
+    else if(backbutton.checkButtonPressed() == 'Pressed'){
+    currentGameState = 'main menu'
+  }
   }
   else if(currentGameState == 'player selection'){
     if(onePlayer.checkButtonPressed() == 'Pressed'){
       playerNumber = 1
       currentGameState = 'round selection'
     }
-     if(twoPlayer.checkButtonPressed() == 'Pressed'){
+     else if(twoPlayer.checkButtonPressed() == 'Pressed'){
       playerNumber = 2
       currentGameState = 'round selection'
     }
-     if(threePlayer.checkButtonPressed() == 'Pressed'){
+     else if(threePlayer.checkButtonPressed() == 'Pressed'){
       playerNumber = 3
       currentGameState = 'round selection'
     }
-     if(fourPlayer.checkButtonPressed() == 'Pressed'){
+     else if(fourPlayer.checkButtonPressed() == 'Pressed'){
       playerNumber = 4
       currentGameState = 'round selection'
     }
+    else if(backbutton.checkButtonPressed() == 'Pressed'){
+    currentGameState = 'gamemode selection'
+  }
   }  
   else if(currentGameState == 'round selection'){
     if(fiveRounds.checkButtonPressed() == 'Pressed'){
       roundlimit = 5
       currentGameState = 'guessing letter'
     }
-     if(tenRounds.checkButtonPressed() == 'Pressed'){
+     else if(tenRounds.checkButtonPressed() == 'Pressed'){
      roundlimit = 10
       currentGameState = 'guessing letter'
     }
-     if(infiniteRounds.checkButtonPressed() == 'Pressed'){
+     else if(infiniteRounds.checkButtonPressed() == 'Pressed'){
       roundlimit = 9999
       currentGameState = 'guessing letter'
     }
-  
+    else if(backbutton.checkButtonPressed() == 'Pressed'){
+    currentGameState = 'player selection'
+    }
   }
   else if(currentGameState == 'guessing letter'){
      if(guessWordButton.checkButtonPressed() == 'Pressed'){
